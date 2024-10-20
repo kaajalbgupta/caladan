@@ -1,7 +1,9 @@
+#![feature(asm)]
 extern crate test;
 
 use std::result::Result;
 use std::time::Instant;
+use std::arch::asm;
 
 extern crate mersenne_twister;
 extern crate rand;
@@ -15,6 +17,7 @@ pub enum FakeWorker {
     RandomMem(Vec<u8>, Vec<usize>),
     StreamingMem(Vec<u8>),
     PointerChase(Vec<usize>),
+    NopWork,
 }
 
 impl FakeWorker {
@@ -27,6 +30,7 @@ impl FakeWorker {
 
         match tokens[0] {
             "sqrt" => Ok(FakeWorker::Sqrt),
+            "nopwork" => Ok(FakeWorker::NopWork),
             "stridedmem" | "randmem" | "memstream" | "pointerchase" => {
                 assert!(tokens.len() > 1);
                 let size: usize = tokens[1].parse().unwrap();
@@ -139,6 +143,12 @@ impl FakeWorker {
                     for i in (0..buf.len()).step_by(64) {
                         test::black_box::<u8>(buf[i]);
                     }
+                }
+            }
+            FakeWorker::NopWork => {
+                // println!("doing nopwork");
+                for _ in 0..iters {
+                    unsafe { asm!("nop"); }
                 }
             }
         }

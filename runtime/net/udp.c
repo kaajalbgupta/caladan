@@ -37,7 +37,7 @@ static int udp_send_raw(struct mbuf *m, size_t len,
 	udphdr->len = hton16(len + sizeof(*udphdr));
 	udphdr->chksum = 0;
 
-	log_info("Sending to ip %u.%u.%u.%u and port %d", (raddr.ip >> 24) & 0xFF, (raddr.ip >> 16) & 0xFF, (raddr.ip >> 8) & 0xFF, raddr.ip & 0xFF, raddr.port);
+	// log_info("Sending to ip %u.%u.%u.%u and port %d", (raddr.ip >> 24) & 0xFF, (raddr.ip >> 16) & 0xFF, (raddr.ip >> 8) & 0xFF, raddr.ip & 0xFF, raddr.port);
 
 	/* send the IP packet */
 	return net_tx_ip(m, IPPROTO_UDP, raddr.ip);
@@ -569,6 +569,7 @@ static void udp_par_recv(struct trans_entry *e, struct mbuf *m)
 		return;
 	}
 
+	// log_info("udp_par_recv: creating thread");
 	th = thread_create_with_buf((thread_fn_t)s->fn,
 				    (void **)&d, sizeof(*d));
 	if (unlikely(!th)) {
@@ -676,7 +677,7 @@ void udp_destroy_spawner(udpspawner_t *s)
 ssize_t udp_send(const void *buf, size_t len,
 		 struct netaddr laddr, struct netaddr raddr)
 {
-	log_info("udp_send: Sending buffer of len %ld", len);
+	// log_info("udp_send: Sending buffer of len %ld", len);
 	void *payload;
 	struct mbuf *m;
 	int ret;
@@ -698,7 +699,7 @@ ssize_t udp_send(const void *buf, size_t len,
 	if (unlikely(!m))
 		return -ENOBUFS;
 	
-	log_info("Allocated TX buffer");
+	// log_info("Allocated TX buffer");
 
 	/* write datagram payload */
 	payload = mbuf_put(m, len);

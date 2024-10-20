@@ -321,11 +321,11 @@ int arp_lookup(uint32_t daddr, struct eth_addr *dhost_out, struct mbuf *m)
 	struct arp_entry *e, *newe = NULL;
 	int idx = hash_ip(daddr);
 
-	log_info("arp_lookup: Arp lookup for %d.%d.%d.%d",
+	/*log_info("arp_lookup: Arp lookup for %d.%d.%d.%d",
 		 ((daddr >> 24) & 0xff),
 		 ((daddr >> 16) & 0xff),
 		 ((daddr >> 8) & 0xff),
-		 (daddr & 0xff));
+		 (daddr & 0xff));*/
 
 	/* hot-path: @daddr hits in ARP cache */
 	rcu_read_lock();

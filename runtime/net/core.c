@@ -107,9 +107,15 @@ out:
 static inline bool ip_hdr_supported(const struct ip_hdr *iphdr)
 {
 	/* must be IPv4, no IP options, no IP fragments */
-	return (iphdr->version == IPVERSION &&
-		iphdr->header_len == sizeof(*iphdr) / sizeof(uint32_t) &&
-		(iphdr->off & IP_MF) == 0);
+	// printf("Enter ip_hdr_supported");
+	// printf("%d\n", iphdr->version == IPVERSION);
+	// printf("%d\n", iphdr->header_len == sizeof(*iphdr) / sizeof(uint32_t));
+	// printf("%d\n", (iphdr->off & IP_MF) == 0);
+	// return (iphdr->version == IPVERSION &&
+	// 	iphdr->header_len == sizeof(*iphdr) / sizeof(uint32_t) &&
+	// 	(iphdr->off & IP_MF) == 0);
+	return ((iphdr->version == IPVERSION) &&
+		(iphdr->header_len == (sizeof(*iphdr) / sizeof(uint32_t))));
 }
 
 /**
@@ -253,7 +259,7 @@ static void iokernel_softirq_poll(struct kthread *k)
 
 		switch (cmd) {
 		case RX_NET_RECV:
-			log_info("Received new packet");
+			// log_info("Received new packet");
 			hdr = shmptr_to_ptr(&netcfg.rx_region,
 					    (shmptr_t)payload,
 					    MBUF_DEFAULT_LEN);
@@ -380,7 +386,7 @@ static void net_tx_raw(struct mbuf *m)
 	struct kthread *k;
 	unsigned int len = mbuf_length(m);
 
-	log_info("net_tx_raw");
+	// log_info("net_tx_raw");
 
 	k = getk();
 	/* drain pending overflow packets first */
@@ -395,7 +401,7 @@ static void net_tx_raw(struct mbuf *m)
 		STAT(TXQ_OVERFLOW)++;
 	}
 
-	log_info("net_tx_raw: Sent tx packet of len %d", len);
+	// log_info("net_tx_raw: Sent tx packet of len %d", len);
 
 	putk();
 }
@@ -415,7 +421,7 @@ void net_tx_eth(struct mbuf *m, uint16_t type, struct eth_addr dhost)
 {
 	struct eth_hdr *eth_hdr;
 
-	log_info("net_tx_eth");
+	// log_info("net_tx_eth");
 
 	eth_hdr = mbuf_push_hdr(m, *eth_hdr);
 	eth_hdr->shost = netcfg.mac;
@@ -516,7 +522,7 @@ int net_tx_ip(struct mbuf *m, uint8_t proto, uint32_t daddr)
 	/* prepend the IP header */
 	net_push_iphdr(m, proto, daddr);
 
-	log_info("In net_tx_ip");
+	// log_info("In net_tx_ip");
 
 	// /* route loopbacks */
 	// if (daddr == netcfg.addr)
@@ -543,7 +549,7 @@ int net_tx_ip(struct mbuf *m, uint8_t proto, uint32_t daddr)
 		}
 	}
 
-	log_info("net_tx_eth");
+	// log_info("net_tx_eth");
 
 	net_tx_eth(m, ETHTYPE_IP, dhost);
 	return 0;

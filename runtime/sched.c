@@ -777,7 +777,7 @@ void thread_yield(void)
 
 static __always_inline thread_t *__thread_create(void)
 {
-  log_info("Spawning new uthread");
+        // log_info("Spawning new uthread");
 	struct thread *th;
 	struct stack *s;
 
@@ -814,6 +814,7 @@ static __always_inline thread_t *__thread_create(void)
  */
 thread_t *thread_create(thread_fn_t fn, void *arg)
 {
+        log_info("thread_create: Spawning new uthread");
 	thread_t *th = __thread_create();
 	if (unlikely(!th))
 		return NULL;
@@ -837,6 +838,7 @@ thread_t *thread_create(thread_fn_t fn, void *arg)
  */
 thread_t *thread_create_with_buf(thread_fn_t fn, void **buf, size_t buf_len)
 {
+	// log_info("thread_create_with_buf: entered");
 	void *ptr;
 	thread_t *th = __thread_create();
 	if (unlikely(!th))
@@ -861,6 +863,7 @@ thread_t *thread_create_with_buf(thread_fn_t fn, void **buf, size_t buf_len)
  */
 int thread_spawn(thread_fn_t fn, void *arg)
 {
+        log_info("thread_spawn: Spawning new uthread");
 	thread_t *th = thread_create(fn, arg);
 	if (unlikely(!th))
 		return -ENOMEM;
@@ -879,6 +882,7 @@ int thread_spawn(thread_fn_t fn, void *arg)
  */
 int thread_spawn_main(thread_fn_t fn, void *arg)
 {
+        log_info("thread_spawn_main: Spawning new uthread");
 	static bool called = false;
 	thread_t *th;
 
@@ -895,6 +899,7 @@ int thread_spawn_main(thread_fn_t fn, void *arg)
 
 static void thread_finish_exit(void)
 {
+        // log_info("thread_finish_exit");
 	struct thread *th = thread_self();
 
 	gc_remove_thread(th);
